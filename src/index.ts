@@ -10,7 +10,7 @@ type Optional<T> = {
   [P in keyof T]?: (T[P] | undefined);
 };
 
-function ExpressPeerServer(server: Server, options?: IConfig) {
+function ExpressPeerServer(server: Server, options?: Optional<IConfig>) {
   const app = express();
 
   const newOptions: IConfig = {
