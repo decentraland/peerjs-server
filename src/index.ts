@@ -5,6 +5,7 @@ import { Server } from "net";
 
 import defaultConfig, { IConfig } from "./config";
 import { createInstance } from "./instance";
+import { IRealm } from "./models/realm";
 
 type Optional<T> = {
   [P in keyof T]?: (T[P] | undefined);
@@ -73,5 +74,6 @@ function PeerServer(options: Optional<IConfig> = {}, callback?: (server: Server)
 
 export {
   ExpressPeerServer,
-  PeerServer
+  PeerServer,
+  IRealm
 };
