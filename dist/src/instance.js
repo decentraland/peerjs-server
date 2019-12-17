@@ -9,6 +9,7 @@ const api_1 = require("./api");
 exports.createInstance = ({ app, server, options }) => {
     const config = options;
     const realm = new realm_1.Realm();
+    app.set("peerjs-realm", realm);
     const messageHandler = new messageHandler_1.MessageHandler(realm);
     const api = api_1.Api({ config, realm, messageHandler });
     const messagesExpire = new messagesExpire_1.MessagesExpire({ realm, config, messageHandler });
