@@ -15,6 +15,7 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": false,
+        "declaration": true,
         "outDir": "dist"
     },
     "include": [
