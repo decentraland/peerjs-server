@@ -20,6 +20,7 @@ class MessageHandler {
         this.handlersRegistry.registerHandler(enums_1.MessageType.HEARTBEAT, handleHeartbeat);
         this.handlersRegistry.registerHandler(enums_1.MessageType.OFFER, handleTransmission);
         this.handlersRegistry.registerHandler(enums_1.MessageType.ANSWER, handleTransmission);
+        this.handlersRegistry.registerHandler(enums_1.MessageType.REJECT, handleTransmission);
         this.handlersRegistry.registerHandler(enums_1.MessageType.CANDIDATE, handleTransmission);
         this.handlersRegistry.registerHandler(enums_1.MessageType.LEAVE, handleTransmission);
         this.handlersRegistry.registerHandler(enums_1.MessageType.EXPIRE, handleTransmission);

@@ -14,6 +14,7 @@ var MessageType;
     MessageType["CANDIDATE"] = "CANDIDATE";
     MessageType["OFFER"] = "OFFER";
     MessageType["ANSWER"] = "ANSWER";
+    MessageType["REJECT"] = "REJECT";
     MessageType["EXPIRE"] = "EXPIRE";
     MessageType["HEARTBEAT"] = "HEARTBEAT";
     MessageType["ID_TAKEN"] = "ID-TAKEN";
