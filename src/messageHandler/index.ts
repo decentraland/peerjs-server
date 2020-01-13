@@ -29,6 +29,7 @@ export class MessageHandler implements IMessageHandler {
     this.handlersRegistry.registerHandler(MessageType.HEARTBEAT, handleHeartbeat);
     this.handlersRegistry.registerHandler(MessageType.OFFER, handleTransmission);
     this.handlersRegistry.registerHandler(MessageType.ANSWER, handleTransmission);
+    this.handlersRegistry.registerHandler(MessageType.REJECT, handleTransmission);
     this.handlersRegistry.registerHandler(MessageType.CANDIDATE, handleTransmission);
     this.handlersRegistry.registerHandler(MessageType.LEAVE, handleTransmission);
     this.handlersRegistry.registerHandler(MessageType.EXPIRE, handleTransmission);

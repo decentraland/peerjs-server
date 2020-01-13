@@ -11,6 +11,7 @@ export enum MessageType {
   CANDIDATE = "CANDIDATE",
   OFFER = "OFFER",
   ANSWER = "ANSWER",
+  REJECT = "REJECT",
   EXPIRE = "EXPIRE",
   HEARTBEAT = "HEARTBEAT",
   ID_TAKEN = "ID-TAKEN",
