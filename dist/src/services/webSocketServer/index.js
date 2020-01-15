@@ -48,15 +48,19 @@ class WebSocketServer extends events_1.default {
         // handle error
         this.emit("error", error);
     }
+    generateRandomMessage() {
+        return Math.random().toString(36).substring(2);
+    }
     _registerClient({ socket, id, token }) {
         // Check concurrent limit
         const clientsCount = this.realm.getClientsIds().length;
         if (clientsCount >= this.config.concurrent_limit) {
             return this._sendErrorAndClose(socket, enums_1.Errors.CONNECTION_LIMIT_EXCEED);
         }
-        const newClient = new client_1.Client({ id, token });
+        const payload = this.generateRandomMessage();
+        const newClient = new client_1.Client({ id, token, msg: payload });
         this.realm.setClient(newClient, id);
-        socket.send(JSON.stringify({ type: enums_1.MessageType.OPEN }));
+        socket.send(JSON.stringify({ type: enums_1.MessageType.OPEN, payload }));
         this._configureWS(socket, newClient);
     }
     _configureWS(socket, client) {

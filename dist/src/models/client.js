@@ -1,17 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Client {
-    constructor({ id, token }) {
+    constructor({ id, token, msg }) {
         this.socket = null;
         this.lastPing = new Date().getTime();
         this.id = id;
         this.token = token;
+        this.msg = msg;
     }
     getId() {
         return this.id;
     }
     getToken() {
         return this.token;
+    }
+    getMsg() {
+        return this.msg;
     }
     getSocket() {
         return this.socket;

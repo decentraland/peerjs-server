@@ -13,6 +13,7 @@ const defaultConfig = {
     ssl: {
         key: "",
         cert: ""
-    }
+    },
+    authHandler: () => Promise.resolve(true)
 };
 exports.default = defaultConfig;

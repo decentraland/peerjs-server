@@ -1,3 +1,5 @@
+import { IClient } from '../models/client';
+import { IMessage } from '../models/message';
 export interface IConfig {
     readonly port: number;
     readonly expire_timeout: number;
@@ -12,6 +14,7 @@ export interface IConfig {
         key: string;
         cert: string;
     };
+    readonly authHandler: (client: IClient | undefined, message: IMessage) => Promise<boolean>;
 }
 declare const defaultConfig: IConfig;
 export default defaultConfig;

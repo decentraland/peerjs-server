@@ -19,6 +19,7 @@ export declare class WebSocketServer extends EventEmitter implements IWebSocketS
     });
     private _onSocketConnection;
     private _onSocketError;
+    private generateRandomMessage;
     private _registerClient;
     private _configureWS;
     private _sendErrorAndClose;

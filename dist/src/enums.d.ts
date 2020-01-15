@@ -14,5 +14,8 @@ export declare enum MessageType {
     EXPIRE = "EXPIRE",
     HEARTBEAT = "HEARTBEAT",
     ID_TAKEN = "ID-TAKEN",
-    ERROR = "ERROR"
+    ERROR = "ERROR",
+    VALIDATION = "VALIDATION",
+    VALIDATION_OK = "VALIDATION_OK",
+    VALIDATION_NOK = "VALIDATION_NOK"
 }

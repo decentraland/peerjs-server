@@ -19,4 +19,7 @@ var MessageType;
     MessageType["HEARTBEAT"] = "HEARTBEAT";
     MessageType["ID_TAKEN"] = "ID-TAKEN";
     MessageType["ERROR"] = "ERROR";
+    MessageType["VALIDATION"] = "VALIDATION";
+    MessageType["VALIDATION_OK"] = "VALIDATION_OK";
+    MessageType["VALIDATION_NOK"] = "VALIDATION_NOK";
 })(MessageType = exports.MessageType || (exports.MessageType = {}));

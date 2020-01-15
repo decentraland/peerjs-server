@@ -21,7 +21,7 @@ export const createInstance = ({ app, server, options }: {
 
   app.set("peerjs-realm", realm);
 
-  const messageHandler = new MessageHandler(realm);
+  const messageHandler = new MessageHandler(realm, config);
 
   const api = Api({ config, realm, messageHandler });
   const messagesExpire: IMessagesExpire = new MessagesExpire({ realm, config, messageHandler });

@@ -10,7 +10,7 @@ exports.createInstance = ({ app, server, options }) => {
     const config = options;
     const realm = new realm_1.Realm();
     app.set("peerjs-realm", realm);
-    const messageHandler = new messageHandler_1.MessageHandler(realm);
+    const messageHandler = new messageHandler_1.MessageHandler(realm, config);
     const api = api_1.Api({ config, realm, messageHandler });
     const messagesExpire = new messagesExpire_1.MessagesExpire({ realm, config, messageHandler });
     const checkBrokenConnections = new checkBrokenConnections_1.CheckBrokenConnections({

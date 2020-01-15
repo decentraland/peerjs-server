@@ -83,6 +83,10 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
     this.emit("error", error);
   }
 
+  private generateRandomMessage() {
+    return Math.random().toString(36).substring(2);
+  }
+
   private _registerClient({ socket, id, token }:
     {
       socket: MyWebSocket;
@@ -96,9 +100,11 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
       return this._sendErrorAndClose(socket, Errors.CONNECTION_LIMIT_EXCEED);
     }
 
-    const newClient: IClient = new Client({ id, token });
+    const payload = this.generateRandomMessage();
+
+    const newClient: IClient = new Client({ id, token, msg: payload });
     this.realm.setClient(newClient, id);
-    socket.send(JSON.stringify({ type: MessageType.OPEN }));
+    socket.send(JSON.stringify({ type: MessageType.OPEN, payload }));
 
     this._configureWS(socket, newClient);
   }

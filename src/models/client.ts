@@ -5,6 +5,8 @@ export interface IClient {
 
   getToken(): string;
 
+  getMsg(): string;
+
   getSocket(): MyWebSocket | null;
 
   setSocket(socket: MyWebSocket | null): void;
@@ -19,12 +21,14 @@ export interface IClient {
 export class Client implements IClient {
   private readonly id: string;
   private readonly token: string;
+  private readonly msg: string;
   private socket: MyWebSocket | null = null;
   private lastPing: number = new Date().getTime();
 
-  constructor({ id, token }: { id: string, token: string; }) {
+  constructor({ id, token, msg }: { id: string, token: string; msg: string }) {
     this.id = id;
     this.token = token;
+    this.msg = msg;
   }
 
   public getId(): string {
@@ -33,6 +37,10 @@ export class Client implements IClient {
 
   public getToken(): string {
     return this.token;
+  }
+
+  public getMsg(): string {
+    return this.msg;
   }
 
   public getSocket(): MyWebSocket | null {
