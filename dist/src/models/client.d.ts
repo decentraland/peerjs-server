@@ -8,6 +8,8 @@ export interface IClient {
     getLastPing(): number;
     setLastPing(lastPing: number): void;
     send(data: any): void;
+    isAuthenticated(): boolean;
+    setAuthenticated(authenticated: boolean): void;
 }
 export declare class Client implements IClient {
     private readonly id;
@@ -15,6 +17,7 @@ export declare class Client implements IClient {
     private readonly msg;
     private socket;
     private lastPing;
+    private authenticated;
     constructor({ id, token, msg }: {
         id: string;
         token: string;
@@ -28,4 +31,6 @@ export declare class Client implements IClient {
     getLastPing(): number;
     setLastPing(lastPing: number): void;
     send(data: any): void;
+    isAuthenticated(): boolean;
+    setAuthenticated(authenticated: boolean): void;
 }

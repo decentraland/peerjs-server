@@ -25,6 +25,12 @@ class MessageHandler {
                     if (socket) {
                         const data = JSON.stringify({ type: result ? enums_1.MessageType.VALIDATION_OK : enums_1.MessageType.VALIDATION_NOK });
                         socket.send(data);
+                        if (!result) {
+                            socket.close();
+                        }
+                        else {
+                            client.setAuthenticated(true);
+                        }
                     }
                     else {
                         // Neither socket no res available. Peer dead?
