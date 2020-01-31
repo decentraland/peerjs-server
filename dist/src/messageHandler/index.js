@@ -23,13 +23,13 @@ class MessageHandler {
                 const socket = (_a = client) === null || _a === void 0 ? void 0 : _a.getSocket();
                 try {
                     if (socket) {
+                        if (result) {
+                            client.setAuthenticated(true);
+                        }
                         const data = JSON.stringify({ type: result ? enums_1.MessageType.VALIDATION_OK : enums_1.MessageType.VALIDATION_NOK });
                         socket.send(data);
                         if (!result) {
                             socket.close();
-                        }
-                        else {
-                            client.setAuthenticated(true);
                         }
                     }
                     else {
