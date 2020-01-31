@@ -32,15 +32,18 @@ export class MessageHandler implements IMessageHandler {
         const socket = client?.getSocket();
         try {
           if (socket) {
+            if(result) {
+              client!.setAuthenticated(true)
+            }
+
             const data = JSON.stringify({ type: result ? MessageType.VALIDATION_OK : MessageType.VALIDATION_NOK });
 
             socket.send(data);
 
             if(!result) {
               socket.close();
-            } else {
-              client!.setAuthenticated(true)
             }
+            
           } else {
             // Neither socket no res available. Peer dead?
             throw new Error("Peer dead");
