@@ -16,6 +16,10 @@ export interface IClient {
   setLastPing(lastPing: number): void;
 
   send(data: any): void;
+
+  isAuthenticated(): boolean;
+
+  setAuthenticated(authenticated: boolean): void;
 }
 
 export class Client implements IClient {
@@ -24,8 +28,9 @@ export class Client implements IClient {
   private readonly msg: string;
   private socket: MyWebSocket | null = null;
   private lastPing: number = new Date().getTime();
+  private authenticated: boolean = false;
 
-  constructor({ id, token, msg }: { id: string, token: string; msg: string }) {
+  constructor({ id, token, msg }: { id: string; token: string; msg: string }) {
     this.id = id;
     this.token = token;
     this.msg = msg;
@@ -61,5 +66,13 @@ export class Client implements IClient {
 
   public send(data: any): void {
     this.socket?.send(JSON.stringify(data));
+  }
+
+  public isAuthenticated(): boolean {
+    return this.authenticated;
+  }
+
+  public setAuthenticated(authenticated: boolean): void {
+    this.authenticated = authenticated;
   }
 }
