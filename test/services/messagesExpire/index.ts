@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { Client } from '../../../src/models/client';
 import { Realm } from '../../../src/models/realm';
 import { IMessage } from '../../../src/models/message';
 import { MessagesExpire } from '../../../src/services/messagesExpire';
 import { MessageHandler } from '../../../src/messageHandler';
 import { MessageType } from '../../../src/enums';
-import { wait } from '../../utils';
+import { wait, createClient } from '../../utils';
+import defaultConfig from '../../../src/config';
 
 describe('MessagesExpire', () => {
   const createTestMessage = (): IMessage => {
@@ -18,14 +18,14 @@ describe('MessagesExpire', () => {
 
   it('should remove client if no read from queue', async () => {
     const realm = new Realm();
-    const messageHandler = new MessageHandler(realm);
+    const messageHandler = new MessageHandler(realm, defaultConfig);
     const checkInterval = 10;
     const expireTimeout = 50;
     const config = { cleanup_out_msgs: checkInterval, expire_timeout: expireTimeout };
 
     const messagesExpire = new MessagesExpire({ realm, config, messageHandler });
 
-    const client = new Client({ id: 'id', token: '' });
+    const client = createClient();
     realm.setClient(client, 'id');
     realm.addMessageToQueue(client.getId(), createTestMessage());
 
@@ -44,14 +44,14 @@ describe('MessagesExpire', () => {
 
   it('should fire EXPIRE message', async () => {
     const realm = new Realm();
-    const messageHandler = new MessageHandler(realm);
+    const messageHandler = new MessageHandler(realm, defaultConfig);
     const checkInterval = 10;
     const expireTimeout = 50;
     const config = { cleanup_out_msgs: checkInterval, expire_timeout: expireTimeout };
 
     const messagesExpire = new MessagesExpire({ realm, config, messageHandler });
 
-    const client = new Client({ id: 'id', token: '' });
+    const client = createClient();
     realm.setClient(client, 'id');
     realm.addMessageToQueue(client.getId(), createTestMessage());
 

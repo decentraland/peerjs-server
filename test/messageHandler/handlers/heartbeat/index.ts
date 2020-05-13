@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import { Client } from '../../../../src/models/client';
 import { HeartbeatHandler } from '../../../../src/messageHandler/handlers';
+import { createClient } from '../../../utils';
 
 describe('Heartbeat handler', () => {
     it('should update last ping time', () => {
-        const client = new Client({ id: 'id', token: '' });
+        const client = createClient({});
         client.setLastPing(0);
 
         const nowTime = new Date().getTime();

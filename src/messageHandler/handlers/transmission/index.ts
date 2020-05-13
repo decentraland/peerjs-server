@@ -5,6 +5,11 @@ import { IRealm } from "../../../models/realm";
 
 export const TransmissionHandler = ({ realm }: { realm: IRealm; }): (client: IClient | undefined, message: IMessage) => boolean => {
   const handle = (client: IClient | undefined, message: IMessage) => {
+    if(!client?.isAuthenticated()) {
+      // We ignore transmission messages for peers that are not authenticated
+      return true;
+    }
+
     const type = message.type;
     const srcId = message.src;
     const dstId = message.dst;

@@ -1,4 +1,5 @@
 import { MyWebSocket } from "../services/webSocketServer/webSocket";
+import { IdType } from "../enums";
 
 export interface IClient {
   getId(): string;
@@ -29,15 +30,21 @@ export class Client implements IClient {
   private socket: MyWebSocket | null = null;
   private lastPing: number = new Date().getTime();
   private authenticated: boolean = false;
+  private idType: IdType;
 
-  constructor({ id, token, msg }: { id: string; token: string; msg: string }) {
+  constructor({ id, token, msg, idType }: { id: string; token: string; msg: string, idType: IdType }) {
     this.id = id;
     this.token = token;
     this.msg = msg;
+    this.idType = idType;
   }
 
   public getId(): string {
     return this.id;
+  }
+
+  public getIdType(): IdType {
+    return this.idType;
   }
 
   public getToken(): string {

@@ -3,7 +3,7 @@ import { IncomingMessage } from "http";
 import url from "url";
 import WebSocketLib from "ws";
 import { IConfig } from "../../config";
-import { Errors, MessageType } from "../../enums";
+import { Errors, MessageType, IdType } from "../../enums";
 import { Client, IClient } from "../../models/client";
 import { IRealm } from "../../models/realm";
 import { MyWebSocket } from "./webSocket";
@@ -18,7 +18,7 @@ interface IAuthParams {
   key?: string;
 }
 
-type CustomConfig = Pick<IConfig, 'path' | 'key' | 'concurrent_limit'>;
+type CustomConfig = Pick<IConfig, 'path' | 'key' | 'concurrent_limit' | 'idGenerator' | 'maxIdIterations'>;
 
 const WS_PATH = 'peerjs';
 
@@ -49,9 +49,16 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
   private _onSocketConnection(socket: MyWebSocket, req: IncomingMessage): void {
     const { query = {} } = url.parse(req.url!, true);
 
-    const { id, token, key }: IAuthParams = query;
+    const { token, key }: IAuthParams = query;
+    const { id, idType } = typeof query.id === "string" ?
+      { id: query.id as string, idType: IdType.SELF_ASSIGNED} :
+      { id: this.getFreeId(this.realm), idType: IdType.SERVER_ASSIGNED} 
+    
+    if(!id) {
+      return this._sendErrorAndClose(socket, Errors.NO_AVAILABLE_ID_FOUND);
+    }
 
-    if (!id || !token || !key) {
+    if (!token || !key) {
       return this._sendErrorAndClose(socket, Errors.INVALID_WS_PARAMETERS);
     }
 
@@ -75,7 +82,29 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
       return this._configureWS(socket, client);
     }
 
-    this._registerClient({ socket, id, token });
+    if(idType === IdType.SERVER_ASSIGNED) {
+      socket.send(JSON.stringify({
+        type: MessageType.ASSIGNED_ID,
+        payload: { id }
+      }))
+    }
+
+    this._registerClient({ socket, id, token, idType });
+  }
+
+  private getFreeId(realm: IRealm): string | undefined {
+    let id = this.config.idGenerator();
+    let currentIterations = 0;
+    while(realm.hasClient(id)) {
+      currentIterations++;
+      if(currentIterations > this.config.maxIdIterations) {
+        return;
+      }
+
+      id = this.config.idGenerator();
+    }
+
+    return id;
   }
 
   private _onSocketError(error: Error): void {
@@ -87,11 +116,12 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
     return Math.random().toString(36).substring(2);
   }
 
-  private _registerClient({ socket, id, token }:
+  private _registerClient({ socket, id, token, idType }:
     {
       socket: MyWebSocket;
       id: string;
       token: string;
+      idType: IdType;
     }): void {
     // Check concurrent limit
     const clientsCount = this.realm.getClientsIds().length;
@@ -102,7 +132,7 @@ export class WebSocketServer extends EventEmitter implements IWebSocketServer {
 
     const payload = this.generateRandomMessage();
 
-    const newClient: IClient = new Client({ id, token, msg: payload });
+    const newClient: IClient = new Client({ id, token, msg: payload, idType });
     this.realm.setClient(newClient, id);
     socket.send(JSON.stringify({ type: MessageType.OPEN, payload }));
 

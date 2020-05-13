@@ -1,5 +1,6 @@
 import { IClient } from '../models/client';
 import { IMessage } from '../models/message';
+import { numericIdGenerator } from '../utils/idgenerator';
 
 export interface IConfig {
   readonly port: number;
@@ -15,7 +16,9 @@ export interface IConfig {
     key: string;
     cert: string;
   };
-  readonly authHandler: (client: IClient | undefined, message: IMessage) => Promise<boolean>
+  readonly authHandler: (client: IClient | undefined, message: IMessage) => Promise<boolean>;
+  readonly idGenerator: () => string;
+  readonly maxIdIterations: number;
 }
 
 const defaultConfig: IConfig = {
@@ -32,7 +35,9 @@ const defaultConfig: IConfig = {
     key: "",
     cert: ""
   },
-  authHandler: () => Promise.resolve(true)
+  authHandler: () => Promise.resolve(true),
+  idGenerator: numericIdGenerator(),
+  maxIdIterations: 100000
 };
 
 export default defaultConfig;

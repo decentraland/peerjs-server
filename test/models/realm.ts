@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { Realm } from '../../src/models/realm';
-import { Client } from '../../src/models/client';
+import { createClient } from '../utils';
 
 describe('Realm', () => {
   describe('#generateClientId', () => {
@@ -13,7 +13,7 @@ describe('Realm', () => {
   describe('#setClient', () => {
     it('should add client to realm', () => {
       const realm = new Realm();
-      const client = new Client({ id: 'id', token: '' });
+      const client = createClient();
 
       realm.setClient(client, 'id');
       expect(realm.getClientsIds()).to.deep.eq(['id']);
@@ -23,7 +23,7 @@ describe('Realm', () => {
   describe('#removeClientById', () => {
     it('should remove client from realm', () => {
       const realm = new Realm();
-      const client = new Client({ id: 'id', token: '' });
+      const client = createClient();
 
       realm.setClient(client, 'id');
       realm.removeClientById('id');
@@ -35,7 +35,7 @@ describe('Realm', () => {
   describe('#getClientsIds', () => {
     it('should reflects on add/remove childs', () => {
       const realm = new Realm();
-      const client = new Client({ id: 'id', token: '' });
+      const client = createClient();
 
       realm.setClient(client, 'id');
       expect(realm.getClientsIds()).to.deep.eq(['id']);

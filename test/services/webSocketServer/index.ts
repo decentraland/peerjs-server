@@ -4,6 +4,7 @@ import { Realm } from '../../../src/models/realm';
 import { WebSocketServer } from '../../../src/services/webSocketServer';
 import { Errors, MessageType } from '../../../src/enums';
 import { wait } from '../../utils';
+import { numericIdGenerator } from '../../../src/utils/idgenerator';
 
 type Destroyable<T> = T & { destroy?: () => Promise<void>; };
 
@@ -17,7 +18,7 @@ const checkOpen = async (c: WebSocket): Promise<boolean> => {
   });
 };
 
-const checkSequence = async (c: WebSocket, msgs: { type: MessageType; error?: Errors; }[]): Promise<boolean> => {
+const checkSequence = async (c: WebSocket, msgs: { type: MessageType; error?: Errors; payloadCheck?: (payload: any) => boolean; }[]): Promise<boolean> => {
   return new Promise(resolve => {
     const restMessages = [...msgs];
 
@@ -46,6 +47,12 @@ const checkSequence = async (c: WebSocket, msgs: { type: MessageType; error?: Er
         return finish();
       }
 
+      const payloadOk = !mes.payloadCheck || mes.payloadCheck(message.payload)
+
+      if (!payloadOk) {
+        return finish();
+      }
+
       if (restMessages.length === 0) {
         finish(true);
       }
@@ -53,9 +60,9 @@ const checkSequence = async (c: WebSocket, msgs: { type: MessageType; error?: Er
   });
 };
 
-const createTestServer = ({ realm, config, url }: { realm: Realm; config: { path: string; key: string; concurrent_limit: number; }; url: string; }): Destroyable<WebSocketServer> => {
+const createTestServer = ({ realm, config, url }: { realm: Realm; config: { path: string; key: string; concurrent_limit: number; idGenerator: () => string; }; url: string; }): Destroyable<WebSocketServer> => {
   const server = new Server(url);
-  const webSocketServer: Destroyable<WebSocketServer> = new WebSocketServer({ server, realm, config });
+  const webSocketServer: Destroyable<WebSocketServer> = new WebSocketServer({ server, realm, config: { ...config, maxIdIterations: 100000 }});
 
   server.on('connection', (socket: WebSocket & { on?: (eventName: string, callback: () => void) => void; }) => {
     const s = webSocketServer.socketServer;
@@ -101,7 +108,7 @@ describe('WebSocketServer', () => {
 
   it('should return valid path', () => {
     const realm = new Realm();
-    const config = { path: '/', key: 'testKey', concurrent_limit: 1 };
+    const config = { path: '/', key: 'testKey', concurrent_limit: 1, idGenerator: numericIdGenerator(), maxIdIterations: 100000 };
     const config2 = { ...config, path: 'path' };
     const server = new Server('path1');
     const server2 = new Server('path2');
@@ -120,7 +127,7 @@ describe('WebSocketServer', () => {
 
   it(`should check client's params`, async () => {
     const realm = new Realm();
-    const config = { path: '/', key: 'testKey', concurrent_limit: 1 };
+    const config = { path: '/', key: 'testKey', concurrent_limit: 1, idGenerator: numericIdGenerator() };
     const fakeURL = 'ws://localhost:8080/peerjs';
 
     const getError = async (url: string, validError: Errors = Errors.INVALID_WS_PARAMETERS): Promise<boolean> => {
@@ -143,9 +150,29 @@ describe('WebSocketServer', () => {
     expect(await getError(`${fakeURL}?key=notValidKey&id=userId&token=userToken`, Errors.INVALID_KEY)).to.be.true;
   });
 
+  it(`should assign a free id when no id is provided`, async () => {
+    const realm = new Realm();
+    const config = { path: '/', key: 'testKey', concurrent_limit: 1, idGenerator: numericIdGenerator() };
+    const url = `ws://localhost:8080/peerjs?key=${config.key}&token=any`;
+
+    const webSocketServer = createTestServer({ url , realm, config });
+
+    const ws = new WebSocket(url);
+
+    const assignedIdReceived = await checkSequence(ws, [
+      { type: MessageType.ASSIGNED_ID, payloadCheck: payload => payload.id === "1" }
+    ]);
+
+    ws.close();
+
+    await webSocketServer.destroy?.();
+
+    expect(assignedIdReceived).to.be.true
+  });
+
   it(`should check concurrent limit`, async () => {
     const realm = new Realm();
-    const config = { path: '/', key: 'testKey', concurrent_limit: 1 };
+    const config = { path: '/', key: 'testKey', concurrent_limit: 1, idGenerator: numericIdGenerator() };
     const fakeURL = 'ws://localhost:8080/peerjs';
 
     const createClient = (id: string): Destroyable<WebSocket> => {

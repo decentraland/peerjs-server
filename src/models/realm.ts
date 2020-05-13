@@ -6,6 +6,8 @@ import { IMessageQueue, MessageQueue } from "./messageQueue";
 export interface IRealm {
   getClientsIds(): string[];
 
+  hasClient(id: string): boolean;
+
   getClientById(clientId: string): IClient | undefined;
 
   getClientsIdsWithQueue(): string[];
@@ -29,6 +31,10 @@ export class Realm implements IRealm {
 
   public getClientsIds(): string[] {
     return [...this.clients.keys()];
+  }
+
+  public hasClient(id: string): boolean {
+    return this.clients.has(id);
   }
 
   public getClientById(clientId: string): IClient | undefined {

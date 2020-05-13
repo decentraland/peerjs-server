@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { Client } from '../../../../src/models/client';
 import { TransmissionHandler } from '../../../../src/messageHandler/handlers';
 import { Realm } from '../../../../src/models/realm';
 import { MessageType } from '../../../../src/enums';
 import { MyWebSocket } from '../../../../src/services/webSocketServer/webSocket';
+import { createClient } from '../../../utils';
 
 const createFakeSocket = (): MyWebSocket => {
   /* eslint-disable @typescript-eslint/no-empty-function */
@@ -22,7 +22,7 @@ describe('Transmission handler', () => {
     const realm = new Realm();
     const handleTransmission = TransmissionHandler({ realm });
 
-    const clientFrom = new Client({ id: 'id1', token: '' });
+    const clientFrom = createClient({ id: 'id1' });
     const idTo = 'id2';
     realm.setClient(clientFrom, clientFrom.getId());
 
@@ -35,7 +35,7 @@ describe('Transmission handler', () => {
     const realm = new Realm();
     const handleTransmission = TransmissionHandler({ realm });
 
-    const clientFrom = new Client({ id: 'id1', token: '' });
+    const clientFrom = createClient({ id: 'id1' });
     const idTo = 'id2';
     realm.setClient(clientFrom, clientFrom.getId());
 
@@ -49,8 +49,8 @@ describe('Transmission handler', () => {
     const realm = new Realm();
     const handleTransmission = TransmissionHandler({ realm });
 
-    const clientFrom = new Client({ id: 'id1', token: '' });
-    const clientTo = new Client({ id: 'id2', token: '' });
+    const clientFrom = createClient({ id: 'id1' });
+    const clientTo = createClient({ id: 'id2' });
     const socketTo = createFakeSocket();
     clientTo.setSocket(socketTo);
     realm.setClient(clientTo, clientTo.getId());
@@ -69,8 +69,8 @@ describe('Transmission handler', () => {
     const realm = new Realm();
     const handleTransmission = TransmissionHandler({ realm });
 
-    const clientFrom = new Client({ id: 'id1', token: '' });
-    const clientTo = new Client({ id: 'id2', token: '' });
+    const clientFrom = createClient({ id: 'id1' });
+    const clientTo = createClient({ id: 'id2' });
     const socketFrom = createFakeSocket();
     const socketTo = createFakeSocket();
     clientFrom.setSocket(socketFrom);
