@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const idgenerator_1 = require("../utils/idgenerator");
 const defaultConfig = {
     port: 9000,
     expire_timeout: 5000,
@@ -14,6 +15,8 @@ const defaultConfig = {
         key: "",
         cert: ""
     },
-    authHandler: () => Promise.resolve(true)
+    authHandler: () => Promise.resolve(true),
+    idGenerator: idgenerator_1.numericIdGenerator(),
+    maxIdIterations: 100000
 };
 exports.default = defaultConfig;

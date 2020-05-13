@@ -3,6 +3,7 @@ import { IMessage } from "./message";
 import { IMessageQueue } from "./messageQueue";
 export interface IRealm {
     getClientsIds(): string[];
+    hasClient(id: string): boolean;
     getClientById(clientId: string): IClient | undefined;
     getClientsIdsWithQueue(): string[];
     setClient(client: IClient, id: string): void;
@@ -16,6 +17,7 @@ export declare class Realm implements IRealm {
     private readonly clients;
     private readonly messageQueues;
     getClientsIds(): string[];
+    hasClient(id: string): boolean;
     getClientById(clientId: string): IClient | undefined;
     getClientsIdsWithQueue(): string[];
     setClient(client: IClient, id: string): void;

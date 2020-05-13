@@ -13,6 +13,9 @@ class Realm {
     getClientsIds() {
         return [...this.clients.keys()];
     }
+    hasClient(id) {
+        return this.clients.has(id);
+    }
     getClientById(clientId) {
         return this.clients.get(clientId);
     }

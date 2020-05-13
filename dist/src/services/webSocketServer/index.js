@@ -23,8 +23,14 @@ class WebSocketServer extends events_1.default {
     }
     _onSocketConnection(socket, req) {
         const { query = {} } = url_1.default.parse(req.url, true);
-        const { id, token, key } = query;
-        if (!id || !token || !key) {
+        const { token, key } = query;
+        const { id, idType } = typeof query.id === "string" ?
+            { id: query.id, idType: enums_1.IdType.SELF_ASSIGNED } :
+            { id: this.getFreeId(this.realm), idType: enums_1.IdType.SERVER_ASSIGNED };
+        if (!id) {
+            return this._sendErrorAndClose(socket, enums_1.Errors.NO_AVAILABLE_ID_FOUND);
+        }
+        if (!token || !key) {
             return this._sendErrorAndClose(socket, enums_1.Errors.INVALID_WS_PARAMETERS);
         }
         if (key !== this.config.key) {
@@ -42,7 +48,25 @@ class WebSocketServer extends events_1.default {
             }
             return this._configureWS(socket, client);
         }
-        this._registerClient({ socket, id, token });
+        if (idType === enums_1.IdType.SERVER_ASSIGNED) {
+            socket.send(JSON.stringify({
+                type: enums_1.MessageType.ASSIGNED_ID,
+                payload: { id }
+            }));
+        }
+        this._registerClient({ socket, id, token, idType });
+    }
+    getFreeId(realm) {
+        let id = this.config.idGenerator();
+        let currentIterations = 0;
+        while (realm.hasClient(id)) {
+            currentIterations++;
+            if (currentIterations > this.config.maxIdIterations) {
+                return;
+            }
+            id = this.config.idGenerator();
+        }
+        return id;
     }
     _onSocketError(error) {
         // handle error
@@ -51,14 +75,14 @@ class WebSocketServer extends events_1.default {
     generateRandomMessage() {
         return Math.random().toString(36).substring(2);
     }
-    _registerClient({ socket, id, token }) {
+    _registerClient({ socket, id, token, idType }) {
         // Check concurrent limit
         const clientsCount = this.realm.getClientsIds().length;
         if (clientsCount >= this.config.concurrent_limit) {
             return this._sendErrorAndClose(socket, enums_1.Errors.CONNECTION_LIMIT_EXCEED);
         }
         const payload = this.generateRandomMessage();
-        const newClient = new client_1.Client({ id, token, msg: payload });
+        const newClient = new client_1.Client({ id, token, msg: payload, idType });
         this.realm.setClient(newClient, id);
         socket.send(JSON.stringify({ type: enums_1.MessageType.OPEN, payload }));
         this._configureWS(socket, newClient);

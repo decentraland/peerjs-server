@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const enums_1 = require("../../../enums");
 exports.TransmissionHandler = ({ realm }) => {
     const handle = (client, message) => {
+        var _a;
+        if (!((_a = client) === null || _a === void 0 ? void 0 : _a.isAuthenticated())) {
+            // We ignore transmission messages for peers that are not authenticated
+            return true;
+        }
         const type = message.type;
         const srcId = message.src;
         const dstId = message.dst;

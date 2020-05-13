@@ -15,6 +15,8 @@ export interface IConfig {
         cert: string;
     };
     readonly authHandler: (client: IClient | undefined, message: IMessage) => Promise<boolean>;
+    readonly idGenerator: () => string;
+    readonly maxIdIterations: number;
 }
 declare const defaultConfig: IConfig;
 export default defaultConfig;
