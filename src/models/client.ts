@@ -4,6 +4,8 @@ import { IdType } from "../enums";
 export interface IClient {
   getId(): string;
 
+  getIdType(): IdType;
+
   getToken(): string;
 
   getMsg(): string;
